@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.sevensource.magnolia</groupId>
+	<artifactId>magnolia-module-keycloak-security</artifactId>
+	<version>0.1.0</version>
+	<packaging>jar</packaging>
+
+	<name>Magnolia Keycloak Security</name>
+	<description>Magnolia Keycloak JAAS Authentication module</description>
+	<url>http://www.github.com/sevensource/magnolia-module-keycloak-security</url>
+
+
+	<properties>
+		<javaVersion>1.8</javaVersion>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<magnoliaVersion>5.5.4</magnoliaVersion>
+		<keycloak.version>3.2.0.Final</keycloak.version>
+	</properties>
+
+	<inceptionYear>2017</inceptionYear>
+
+	<organization>
+		<name>SevenSource, pgaschuetz</name>
+		<url>http://www.github.com/sevensource</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<name>pgaschuetz</name>
+			<organizationUrl>http://github.com/pgaschuetz</organizationUrl>
+		</developer>
+	</developers>
+
+	<issueManagement>
+		<url>https://github.com/sevensource/magnolia-module-keycloak-security/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>
+
+	<scm>
+		<connection>scm:git:git://github.com/sevensource/magnolia-module-keycloak-security.git</connection>
+		<developerConnection>scm:git:git@github.com:sevensource/magnolia-module-keycloak-security.git</developerConnection>
+		<url>http://github.com/sevensource/magnolia-module-keycloak-security/tree/master</url>
+	</scm>
+
+	<licenses>
+		<license>
+			<name>GNU General Public License (GPL)</name>
+			<url>http://www.gnu.org/licenses/gpl.txt</url>
+		</license>
+	</licenses>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>magnolia.public</id>
+			<url>https://nexus.magnolia-cms.com/content/groups/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>vaadin-addons</id>
+			<url>https://maven.vaadin.com/vaadin-addons</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>info.magnolia</groupId>
+			<artifactId>magnolia-jaas</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-adapter-core</artifactId>
+			<version>${keycloak.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-core</artifactId>
+			<version>${keycloak.version}</version>
+		</dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <version>3.3.0.Final</version>
+        </dependency>
+	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>info.magnolia.bundle</groupId>
+				<artifactId>magnolia-bundle-parent</artifactId>
+				<version>${magnoliaVersion}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.6.1</version>
+					<configuration>
+						<source>${javaVersion}</source>
+						<target>${javaVersion}</target>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>external.atlassian.jgitflow</groupId>
+					<artifactId>jgitflow-maven-plugin</artifactId>
+					<version>1.0-m5.1</version>
+					<configuration>
+						<arguments>-Dmaven.install.skip=true</arguments>
+						<flowInitContext>
+							<versionTagPrefix>v</versionTagPrefix>
+						</flowInitContext>
+						<autoVersionSubmodules>true</autoVersionSubmodules>
+						<enableSshAgent>true</enableSshAgent>
+						<noDeploy>true</noDeploy>
+						<pushReleases>true</pushReleases>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.20</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>3.0.1</version>
+					<executions>
+						<execution>
+							<id>attach-sources</id>
+							<goals>
+								<goal>jar-no-fork</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.10.4</version>
+					<executions>
+						<execution>
+							<id>attach-javadocs</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>1.6</version>
+					<executions>
+						<execution>
+							<id>sign-artifacts</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>sign</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<groupId>org.sonatype.plugins</groupId>
+					<artifactId>nexus-staging-maven-plugin</artifactId>
+					<version>1.6.8</version>
+					<extensions>true</extensions>
+					<configuration>
+						<serverId>ossrh</serverId>
+						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+						<autoReleaseAfterClose>true</autoReleaseAfterClose>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+			<resource>
+				<filtering>true</filtering>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>META-INF/magnolia/*</include>
+				</includes>
+			</resource>
+		</resources>
+	</build>
+</project>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module SYSTEM "module.dtd" >
+<module>
+  <name>keycloak-security</name>
+  <displayName>Keycloak Security Authentication Module</displayName>
+  <class>org.sevensource.magnolia.keycloak.KeycloakSecurityModule</class>
+  <versionHandler>org.sevensource.magnolia.keycloak.setup.KeycloakSecurityModuleVersionHandler</versionHandler>
+  <version>${project.version}</version>
+
+  <dependencies>
+    <dependency>
+      <name>core</name>
+      <version>5.5.4/*</version>
+    </dependency>
+  </dependencies>
+</module>
