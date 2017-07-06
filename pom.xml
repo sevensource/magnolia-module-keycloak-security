@@ -156,7 +156,6 @@
 						<flowInitContext>
 							<versionTagPrefix>v</versionTagPrefix>
 						</flowInitContext>
-						<autoVersionSubmodules>true</autoVersionSubmodules>
 						<enableSshAgent>true</enableSshAgent>
 						<noDeploy>true</noDeploy>
 						<pushReleases>true</pushReleases>
