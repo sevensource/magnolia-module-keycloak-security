@@ -8,6 +8,7 @@ import info.magnolia.module.ModuleLifecycleContext;
 public class KeycloakSecurityModule implements ModuleLifecycle {
 	
 	private RoleMapper roleMapper;
+	private String keycloakConfigFile;
 	
 	@Override
 	public void start(ModuleLifecycleContext moduleLifecycleContext) {
@@ -25,5 +26,13 @@ public class KeycloakSecurityModule implements ModuleLifecycle {
 	
 	public void setRoleMapper(RoleMapper roleMapper) {
 		this.roleMapper = roleMapper;
+	}
+	
+	public String getKeycloakConfigFile() {
+		return keycloakConfigFile;
+	}
+	
+	public void setKeycloakConfigFile(String keycloakConfigFile) {
+		this.keycloakConfigFile = keycloakConfigFile;
 	}
 }
