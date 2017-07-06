@@ -19,18 +19,23 @@ Installation
 magnolia {
   info.magnolia.jaas.sp.jcr.JCRAuthenticationModule optional realm=system;
 
-  org.sevensource.magnolia.keycloak.security.KeycloakLoginModuleAdapter requisite skip_on_previous_success=true keycloak-config-file="classpath:keycloak.json";
+  org.sevensource.magnolia.keycloak.security.KeycloakLoginModuleAdapter requisite realm=external skip_on_previous_success=true;
   info.magnolia.jaas.sp.jcr.JCRAuthorizationModule required;
 };
 ```
+
 * for further JAAS configuration options, see
-  - http://docs.oracle.com/javase/6/docs/technotes/guides/security/jaas/JAASRefGuide.html
+  - http://docs.oracle.com/javase/8/docs/api/javax/security/auth/login/Configuration.html
   - https://documentation.magnolia-cms.com/display/DOCS/NTLM+Connector+module
   - https://documentation.magnolia-cms.com/display/DOCS/LDAP+Connector+module
   - https://documentation.magnolia-cms.com/display/DOCS/CAS+module
+  - http://docs.oracle.com/javase/8/docs/technotes/guides/security/jaas/JAASRefGuide.html
 
 Configuration
 =============
-All additional configuration is stored in Magnolias JCR:
-* the module installs a UserManager into `/server/security/userManagers/external`
-* RoleMapping from Keycloak roles to Magnolia roles can be configured in `/modules/keycloak-security/config/roleMapper`
+All additional configuration is stored in Magnolias JCR.
+
+* login into magnolia using the `superuser` account
+* go into Configurations App and navigate to `/modules/keycloak-security/config` and add your keycloakConfigFile, i.e. `classpath:keycloak.json`
+* the module features a RoleMapper, which maps Keycloak roles to Magnolia roles. It is configured in `/modules/keycloak-security/config/roleMapper`.
+* the module installs a UserManager into `/server/security/userManagers/external` which can be used as an extension point for customisation

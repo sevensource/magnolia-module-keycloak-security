@@ -4,7 +4,7 @@
 
 	<groupId>org.sevensource.magnolia</groupId>
 	<artifactId>magnolia-module-keycloak-security</artifactId>
-	<version>0.1.0</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>Magnolia Keycloak Security</name>
@@ -156,7 +156,6 @@
 						<flowInitContext>
 							<versionTagPrefix>v</versionTagPrefix>
 						</flowInitContext>
-						<autoVersionSubmodules>true</autoVersionSubmodules>
 						<enableSshAgent>true</enableSshAgent>
 						<noDeploy>true</noDeploy>
 						<pushReleases>true</pushReleases>

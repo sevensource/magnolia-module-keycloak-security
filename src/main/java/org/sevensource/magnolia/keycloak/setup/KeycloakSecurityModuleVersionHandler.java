@@ -21,10 +21,10 @@ import info.magnolia.module.delta.Task;
 import info.magnolia.repository.RepositoryConstants;
 
 public class KeycloakSecurityModuleVersionHandler extends DefaultModuleVersionHandler {	
-	private final static String USERMANAGERS_NODE = "/server/security/userManagers";
-	private final static String REALM_NAME = "external";
-	private final static String EXTERNAL_USERMANAGER_NODE = USERMANAGERS_NODE + "/" + REALM_NAME;
-	private final static String SYSTEM_USERMANAGER = "system";
+	private static final String USERMANAGERS_NODE = "/server/security/userManagers";
+	private static final String REALM_NAME = "external";
+	private static final String EXTERNAL_USERMANAGER_NODE = USERMANAGERS_NODE + "/" + REALM_NAME;
+	private static final String SYSTEM_USERMANAGER = "system";
 	
 	
 	@Override
@@ -41,6 +41,7 @@ public class KeycloakSecurityModuleVersionHandler extends DefaultModuleVersionHa
         
         final ModuleConfigNodeBuilderTask task = new ModuleConfigNodeBuilderTask(
         		"Create RoleMapper configuration", "Create RoleMapper configuration", ErrorHandling.strict,
+        		Ops.addProperty("keycloakConfigFile", ""),
         		Ops.addNode("roleMapper", NodeTypes.ContentNode.NAME).then(
         				Ops.addProperty("class", DefaultRoleMapper.class.getName()),
         				Ops.addProperty("mapUnmappedRolesAsIs", "true"),

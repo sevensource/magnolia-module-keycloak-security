@@ -1,25 +1,25 @@
 package org.sevensource.magnolia.keycloak.security;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.keycloak.KeycloakPrincipal;
-import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.adapters.jaas.DirectAccessGrantsLoginModule;
 import org.keycloak.adapters.jaas.RolePrincipal;
 import org.sevensource.magnolia.keycloak.KeycloakSecurityModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import info.magnolia.cms.security.SecuritySupport;
 import info.magnolia.cms.security.User;
-import info.magnolia.cms.security.auth.GroupList;
-import info.magnolia.cms.security.auth.RoleList;
-import info.magnolia.jaas.principal.GroupListImpl;
-import info.magnolia.jaas.principal.RoleListImpl;
+import info.magnolia.cms.security.UserManager;
 import info.magnolia.jaas.sp.AbstractLoginModule;
 import info.magnolia.jaas.sp.UserAwareLoginModule;
 import info.magnolia.objectfactory.Components;
@@ -28,30 +28,64 @@ public class KeycloakLoginModuleAdapter extends AbstractLoginModule implements U
 
 	private static final Logger logger = LoggerFactory.getLogger(KeycloakLoginModuleAdapter.class);
 	
-	private final DirectAccessGrantsLoginModule keycloakLoginModule;
+	private DirectAccessGrantsLoginModule keycloakLoginModule;
+	private KeycloakSecurityModule keycloakSecurityModule;
 	
 	private User user = null;
 	
-	public KeycloakLoginModuleAdapter() {
-		this.keycloakLoginModule = new DirectAccessGrantsLoginModule();
-	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void initialize(Subject subject, CallbackHandler callbackHandler, Map sharedState, Map options) {
-		super.initialize(subject, callbackHandler, sharedState, options);
-		keycloakLoginModule.initialize(subject, callbackHandler, sharedState, options);
+		this.keycloakSecurityModule = Components.getComponent(KeycloakSecurityModule.class);
+		this.keycloakLoginModule = new DirectAccessGrantsLoginModule();
+		
+		final Map<String, Object> newOptions = new HashMap<>(options);
+		setupKeycloakOptionsFile(newOptions);
+		
+		super.initialize(subject, callbackHandler, sharedState, newOptions);
+		keycloakLoginModule.initialize(subject, callbackHandler, sharedState, newOptions);
+	}
+	
+	protected void setupKeycloakOptionsFile(Map<String, Object> options) {
+		if(! options.containsKey(DirectAccessGrantsLoginModule.KEYCLOAK_CONFIG_FILE_OPTION)) {
+			final String configFile = keycloakSecurityModule.getKeycloakConfigFile();
+			if(StringUtils.isNotBlank(configFile)) {
+				options.put(DirectAccessGrantsLoginModule.KEYCLOAK_CONFIG_FILE_OPTION, configFile);
+			}
+		}
+	}
+	
+	protected void checkKeycloakOptionsFile(Map options) throws LoginException {		
+		if(! options.containsKey(DirectAccessGrantsLoginModule.KEYCLOAK_CONFIG_FILE_OPTION)) {
+			final String msg = "No keycloakConfigFile specified";
+			logger.error(msg);
+			throw new LoginException(msg);
+		}
 	}
 	
 	@Override
 	public boolean login() throws LoginException {
+		
         if (this.getSkip()) {
             return true;
         }
         
-		boolean result = keycloakLoginModule.login();
+        checkKeycloakOptionsFile(options);
+        
+        boolean result = false;
+        
+        try {
+        	result = keycloakLoginModule.login();
+        } catch(LoginException le) {
+        	logger.warn(le.getMessage());
+        	FailedLoginException e = new FailedLoginException();
+        	e.initCause(le);
+        	throw e;
+        }
+        
         this.success = result;
-        this.setSharedStatus(result ? STATUS_SUCCEEDED : STATUS_FAILED);
+        this.setSharedStatus(result ? STATUS_SUCCEEDED : STATUS_SKIPPED);
         return this.success;
 	}
 	
@@ -63,20 +97,20 @@ public class KeycloakLoginModuleAdapter extends AbstractLoginModule implements U
 	}
 	
 	@Override
-	public boolean abort() throws LoginException {
+	public boolean abort() throws LoginException {		
 		super.abort();
 		return keycloakLoginModule.abort();
 	}
 	
 	@Override
-	public boolean logout() throws LoginException {
+	public boolean logout() throws LoginException {		
 		super.logout();
 		return keycloakLoginModule.logout();
 	}
 	
 	@Override
 	public void validateUser() throws LoginException {
-		throw new IllegalStateException("This should never be executed");
+        throw new UnsupportedOperationException("validateUser() is not used in this implementation");
 	}
 	
 	@Override
@@ -107,52 +141,32 @@ public class KeycloakLoginModuleAdapter extends AbstractLoginModule implements U
 				logger.error(msg);
 				throw new IllegalStateException(msg);
 			} else if(principals.size() > 1) {
-				final String msg = String.format("%s KeycloakPrincipals available - don't know which to use", principals.size());
+				final String msg = String.format("%s KeycloakPrincipals available - which one should I choose?", principals.size());
 				logger.error(msg);
 				throw new IllegalStateException(msg);
 			}
 			
 			final KeycloakPrincipal<?> principal = principals.iterator().next();
-			this.user = buildUser(principal);
+			final Set<RolePrincipal> roles = this.subject.getPrincipals(RolePrincipal.class);
+			
+			this.user = buildUser(principal, roles);
 		}
 		
 		return this.user;
 	}
 	
-	
-	protected User buildUser(KeycloakPrincipal<?> principal) {
-		final KeycloakSecurityContext ctx = principal.getKeycloakSecurityContext();
-		
-		ctx.getTokenString();
-		
-		final KeycloakUser keycloakUser = new KeycloakUser(buildGroupList(), buildRoleList());
-		keycloakUser.setEmail(ctx.getToken().getEmail());
-		keycloakUser.setEnabled(true);
-		keycloakUser.setLanguage(ctx.getToken().getLocale());
-		keycloakUser.setName(ctx.getToken().getPreferredUsername());
-		keycloakUser.setFullname(ctx.getToken().getName());
-		keycloakUser.setIdentifier(ctx.getToken().getId());
-		
-		return keycloakUser;
-	}
-	
-	protected RoleList buildRoleList() {
-		final RoleList roleList = new RoleListImpl();
-		
-		final RoleMapper roleMapper = Components.getComponent(KeycloakSecurityModule.class).getRoleMapper();
-		
-		final Set<RolePrincipal> roles = this.subject.getPrincipals(RolePrincipal.class);
-		for(RolePrincipal rolePrincipal : roles) {
-			final String role = roleMapper.mapRole(rolePrincipal.getName());
-			if(role != null) {
-				roleList.add(role);
-			}	
+	protected User buildUser(KeycloakPrincipal<?> principal, Set<RolePrincipal> roles) {
+		final UserManager userManager = Components.getComponent(SecuritySupport.class).getUserManager(realm.getName());
+		if(userManager == null) {
+			final String msg = String.format("No UserManager found for realm %s", realm.getName());
+			logger.error(msg);
+			throw new IllegalArgumentException(msg);
+		} else if(! (userManager instanceof KeycloakUserManager)) {
+			final String msg = String.format("UserManager is of type %s, but expected %s", userManager.getClass().getName(), KeycloakUserManager.class.getName());
+			logger.error(msg);
+			throw new IllegalArgumentException(msg);
 		}
 		
-		return roleList;
-	}
-	
-	protected GroupList buildGroupList() {
-		return new GroupListImpl();
+		return ((KeycloakUserManager) userManager).getUser(principal, roles);
 	}
 }
