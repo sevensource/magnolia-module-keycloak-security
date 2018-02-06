@@ -6,7 +6,7 @@
 magnolia-module-keycloak-security
 ================================
 
-[Keycloak](http://www.keycloak.org/) SSO/IAM integration for [Magnolia](http://www.magnolia-cms.com) 5.5.x 
+[Keycloak](http://www.keycloak.org/) SSO/IAM integration for [Magnolia](http://www.magnolia-cms.com) 5.5, 5.6
 
 This module delegates authentication - in addition to Magnolias builtin authentication mechanisms - to Keycloak.
 
