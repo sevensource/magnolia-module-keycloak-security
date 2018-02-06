@@ -12,11 +12,11 @@ public class DefaultRoleMapper implements RoleMapper {
 	
 	@Override
 	public String mapRole(String role) {
-		final String target = mappings.get(role);
-		if(! StringUtils.isEmpty(target)) {
-			return target;
+		final String mappedRole = mappings.get(role);
+		if(! StringUtils.isEmpty(mappedRole)) {
+			return mappedRole;
 		} else {
-			return mapUnmappedRolesAsIs ? target : null;
+			return mapUnmappedRolesAsIs ? mappedRole : null;
 		}
 	}
 	
