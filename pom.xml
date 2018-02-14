@@ -17,6 +17,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<magnoliaVersion>5.6</magnoliaVersion>
 		<keycloak.version>3.2.0.Final</keycloak.version>
+		<jboss.logging.version>3.3.1.Final</jboss.logging.version>
 	</properties>
 
 	<inceptionYear>2017</inceptionYear>
@@ -91,15 +92,22 @@
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
-            <version>3.3.0.Final</version>
+            <version>${jboss.logging.version}</version>
         </dependency>
 	</dependencies>
 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>info.magnolia.bundle</groupId>
-				<artifactId>magnolia-bundle-parent</artifactId>
+				<groupId>info.magnolia.boms</groupId>
+				<artifactId>magnolia-external-dependencies</artifactId>
+				<version>${magnoliaVersion}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>info.magnolia</groupId>
+				<artifactId>magnolia-project</artifactId>
 				<version>${magnoliaVersion}</version>
 				<type>pom</type>
 				<scope>import</scope>
