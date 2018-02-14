@@ -4,7 +4,7 @@
 
 	<groupId>org.sevensource.magnolia</groupId>
 	<artifactId>magnolia-module-keycloak-security</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.1.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Magnolia Keycloak Security</name>
