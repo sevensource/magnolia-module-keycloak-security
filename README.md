@@ -11,6 +11,9 @@ magnolia-module-keycloak-security
 This module delegates authentication - in addition to Magnolias builtin authentication mechanisms - to Keycloak.
 
 
+This module delegates authentication - in addition to Magnolias builtin authentication mechanisms - to Keycloak.
+
+
 **Contributions welcome!**
 
 Installation
