@@ -31,10 +31,10 @@ magnolia {
 
 * for further JAAS configuration options, see
   - http://docs.oracle.com/javase/8/docs/api/javax/security/auth/login/Configuration.html
-  - https://documentation.magnolia-cms.com/display/DOCS/NTLM+Connector+module
   - https://documentation.magnolia-cms.com/display/DOCS/LDAP+Connector+module
   - https://documentation.magnolia-cms.com/display/DOCS/CAS+module
   - http://docs.oracle.com/javase/8/docs/technotes/guides/security/jaas/JAASRefGuide.html
+  - https://documentation.magnolia-cms.com/display/DOCS/NTLM+Connector+module (requires authentication)
 
 Configuration
 =============
